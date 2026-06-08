@@ -12,7 +12,7 @@ export const itemController = {
       throw new AppError('No autorizado', 401);
     }
 
-    const item = await itemService.create(userId, req.params.listId, req.body);
+    const item = await itemService.create(userId, req.params.listId as string, req.body);
     return sendSuccess(res, 'Ítem creado correctamente', item, 201);
   },
 
@@ -23,7 +23,7 @@ export const itemController = {
       throw new AppError('No autorizado', 401);
     }
 
-    const items = await itemService.findAllByList(userId, req.params.listId, req.query.categoryId as string | undefined);
+    const items = await itemService.findAllByList(userId, req.params.listId as string, req.query.categoryId as string | undefined);
     return sendSuccess(res, 'Ítems obtenidos correctamente', items);
   },
 
@@ -34,7 +34,7 @@ export const itemController = {
       throw new AppError('No autorizado', 401);
     }
 
-    const item = await itemService.findById(userId, req.params.itemId);
+    const item = await itemService.findById(userId, req.params.itemId as string);
     return sendSuccess(res, 'Ítem obtenido correctamente', item);
   },
 
@@ -45,7 +45,7 @@ export const itemController = {
       throw new AppError('No autorizado', 401);
     }
 
-    const item = await itemService.update(userId, req.params.itemId, req.body);
+    const item = await itemService.update(userId, req.params.itemId as string, req.body);
     return sendSuccess(res, 'Ítem actualizado correctamente', item);
   },
 
@@ -56,7 +56,7 @@ export const itemController = {
       throw new AppError('No autorizado', 401);
     }
 
-    const item = await itemService.remove(userId, req.params.itemId);
+    const item = await itemService.remove(userId, req.params.itemId as string);
     return sendSuccess(res, 'Ítem eliminado correctamente', item);
   }
 };

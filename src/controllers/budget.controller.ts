@@ -12,7 +12,7 @@ export const budgetController = {
       throw new AppError('No autorizado', 401);
     }
 
-    const budget = await budgetService.getBudgetState(userId, req.params.listId);
+    const budget = await budgetService.getBudgetState(userId, req.params.listId as string);
     return sendSuccess(res, 'Presupuesto obtenido correctamente', budget);
   },
 
@@ -23,7 +23,7 @@ export const budgetController = {
       throw new AppError('No autorizado', 401);
     }
 
-    const budget = await budgetService.upsertBudget(userId, req.params.listId, req.body);
+    const budget = await budgetService.upsertBudget(userId, req.params.listId as string, req.body);
     return sendSuccess(res, 'Presupuesto actualizado correctamente', budget);
   }
 };

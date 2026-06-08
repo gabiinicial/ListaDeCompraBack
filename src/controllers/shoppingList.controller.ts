@@ -34,7 +34,7 @@ export const shoppingListController = {
       throw new AppError('No autorizado', 401);
     }
 
-    const shoppingList = await shoppingListService.findById(userId, req.params.id);
+    const shoppingList = await shoppingListService.findById(userId, req.params.id as string);
     return sendSuccess(res, 'Lista obtenida correctamente', shoppingList);
   },
 
@@ -45,7 +45,7 @@ export const shoppingListController = {
       throw new AppError('No autorizado', 401);
     }
 
-    const shoppingList = await shoppingListService.update(userId, req.params.id, req.body);
+    const shoppingList = await shoppingListService.update(userId, req.params.id as string, req.body);
     return sendSuccess(res, 'Lista actualizada correctamente', shoppingList);
   },
 
@@ -56,7 +56,7 @@ export const shoppingListController = {
       throw new AppError('No autorizado', 401);
     }
 
-    const shoppingList = await shoppingListService.remove(userId, req.params.id);
+    const shoppingList = await shoppingListService.remove(userId, req.params.id as string);
     return sendSuccess(res, 'Lista eliminada correctamente', shoppingList);
   }
 };

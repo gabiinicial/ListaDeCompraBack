@@ -34,7 +34,7 @@ export const notificationController = {
       throw new AppError('No autorizado', 401);
     }
 
-    const notification = await notificationService.markAsRead(userId, req.params.notificationId);
+    const notification = await notificationService.markAsRead(userId, req.params.notificationId as string);
     return sendSuccess(res, 'Notificación marcada como leída', notification);
   }
 };

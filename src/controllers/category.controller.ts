@@ -12,7 +12,7 @@ export const categoryController = {
       throw new AppError('No autorizado', 401);
     }
 
-    const categories = await categoryService.listByList(userId, req.params.listId);
+    const categories = await categoryService.listByList(userId, req.params.listId as string);
     return sendSuccess(res, 'Categorías obtenidas correctamente', categories);
   },
 
@@ -23,7 +23,7 @@ export const categoryController = {
       throw new AppError('No autorizado', 401);
     }
 
-    const category = await categoryService.create(userId, req.params.listId, req.body);
+    const category = await categoryService.create(userId, req.params.listId as string, req.body);
     return sendSuccess(res, 'Categoría creada correctamente', category, 201);
   },
 
@@ -34,7 +34,7 @@ export const categoryController = {
       throw new AppError('No autorizado', 401);
     }
 
-    const category = await categoryService.update(userId, req.params.categoryId, req.body);
+    const category = await categoryService.update(userId, req.params.categoryId as string, req.body);
     return sendSuccess(res, 'Categoría actualizada correctamente', category);
   },
 
@@ -45,7 +45,7 @@ export const categoryController = {
       throw new AppError('No autorizado', 401);
     }
 
-    const category = await categoryService.remove(userId, req.params.categoryId);
+    const category = await categoryService.remove(userId, req.params.categoryId as string);
     return sendSuccess(res, 'Categoría eliminada correctamente', category);
   }
 };

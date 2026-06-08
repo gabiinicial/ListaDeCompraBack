@@ -1,4 +1,4 @@
-import { NotificationType } from '@prisma/client';
+import { NotificationType, Prisma } from '@prisma/client';
 
 import { prisma } from '../config/prisma';
 import { AppError } from '../utils/appError';
@@ -41,7 +41,9 @@ const itemSelect = {
   }
 } as const;
 
-const serializeItem = (item: Awaited<ReturnType<typeof prisma.item.create>>) => ({
+type ItemWithCategory = Prisma.ItemGetPayload<{ select: typeof itemSelect }>;
+
+const serializeItem = (item: ItemWithCategory) => ({
   id: item.id,
   listId: item.listId,
   categoryId: item.categoryId,

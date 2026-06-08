@@ -7,7 +7,7 @@ export type AuthTokenPayload = {
 
 export const signToken = (payload: AuthTokenPayload, secret: string, expiresIn: string) => {
   return jwt.sign(payload, secret, {
-    expiresIn
+    expiresIn: expiresIn as jwt.SignOptions['expiresIn']
   });
 };
 
