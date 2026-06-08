@@ -3,4 +3,4 @@ dist
 .env
 .DS_Store
 coverage
-.nyc_output
+.nyc_output 
