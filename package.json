@@ -1,0 +1,57 @@
+{
+  "name": "grocery-pro-backend",
+  "version": "1.0.0",
+  "description": "Backend base para listas de compras colaborativas con Express, TypeScript, Prisma y PostgreSQL.",
+  "main": "dist/server.js",
+  "packageManager": "pnpm@9.15.4",
+  "scripts": {
+    "dev": "tsx watch src/server.ts",
+    "build": "tsc -p tsconfig.json",
+    "start": "node dist/server.js",
+    "prisma:generate": "prisma generate",
+    "prisma:migrate": "prisma migrate dev",
+    "prisma:studio": "prisma studio",
+    "test:unit": "jest --testPathPattern=tests/unit",
+    "test:integration": "jest --testPathPattern=tests/integration",
+    "test:e2e": "playwright test",
+    "test:coverage": "jest --coverage --testPathPattern=tests/unit"
+  },
+  "keywords": [
+    "express",
+    "typescript",
+    "prisma",
+    "postgresql",
+    "jwt"
+  ],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "dependencies": {
+    "@prisma/client": "^6.10.1",
+    "bcryptjs": "^2.4.3",
+    "cors": "^2.8.5",
+    "dotenv": "^16.6.1",
+    "express": "^5.1.0",
+    "jsonwebtoken": "^9.0.2",
+    "morgan": "^1.10.0",
+    "zod": "^3.25.67"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.45.0",
+    "@types/bcryptjs": "^2.4.6",
+    "@types/cors": "^2.8.19",
+    "@types/express": "^5.0.3",
+    "@types/jest": "^29.5.14",
+    "@types/jsonwebtoken": "^9.0.10",
+    "@types/morgan": "^1.9.9",
+    "@types/node": "^24.0.10",
+    "@types/supertest": "^6.0.2",
+    "jest": "^29.7.0",
+    "jest-mock-extended": "^3.0.7",
+    "prisma": "^6.10.1",
+    "supertest": "^7.0.0",
+    "ts-jest": "^29.2.5",
+    "tsx": "^4.20.3",
+    "typescript": "^5.8.3"
+  }
+}

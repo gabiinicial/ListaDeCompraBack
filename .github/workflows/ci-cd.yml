@@ -1,0 +1,98 @@
+name: CI/CD — Grocery Pro Backend
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+# ──────────────────────────────────────────────────────────────────────────────
+# JOB 1: Build + check + test
+# Corre en cada PR y en cada push a main.
+# ──────────────────────────────────────────────────────────────────────────────
+jobs:
+  ci:
+    name: Build & Test
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: grocery_pro_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    env:
+      DATABASE_URL: postgresql://postgres:postgres@localhost:5432/grocery_pro_test
+      JWT_SECRET: ci-secret-for-testing-purposes-must-be-32-chars
+      JWT_EXPIRES_IN: 7d
+      BCRYPT_SALT_ROUNDS: 4
+      NODE_ENV: test
+      CORS_ORIGIN: http://localhost:3000
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9.15.4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Generate Prisma client
+        run: pnpm prisma generate
+
+      - name: Apply migrations (test DB)
+        run: pnpm prisma migrate deploy
+
+      - name: TypeScript build
+        run: pnpm build
+
+      - name: Run unit tests
+        run: pnpm test:unit -- --passWithNoTests
+
+# ──────────────────────────────────────────────────────────────────────────────
+# JOB 2: Deploy to Railway
+# Solo corre cuando se hace merge a main (no en PRs).
+# Requiere los secrets: RAILWAY_TOKEN, RAILWAY_PROJECT_ID, RAILWAY_SERVICE_NAME
+# ──────────────────────────────────────────────────────────────────────────────
+  deploy:
+    name: Deploy to Railway
+    runs-on: ubuntu-latest
+    needs: ci
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install Railway CLI
+        run: npm install -g @railway/cli@latest
+
+      - name: Deploy
+        run: |
+          railway up \
+            --service "$RAILWAY_SERVICE_NAME" \
+            --environment production \
+            --detach
+        env:
+          RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
+          RAILWAY_PROJECT_ID: ${{ secrets.RAILWAY_PROJECT_ID }}
+          RAILWAY_SERVICE_NAME: ${{ secrets.RAILWAY_SERVICE_NAME }}

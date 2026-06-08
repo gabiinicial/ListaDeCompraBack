@@ -1,0 +1,138 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum ListPrivacy {
+  PRIVATE
+  SHARED
+}
+
+enum BudgetStatus {
+  NO_BUDGET
+  UNDER_LIMIT
+  NEAR_LIMIT
+  OVER_LIMIT
+}
+
+enum NotificationType {
+  ITEM_CREATED
+  ITEM_UPDATED
+  ITEM_DELETED
+  ITEM_PURCHASED
+  ITEM_UNPURCHASED
+  CATEGORY_CREATED
+  CATEGORY_UPDATED
+  CATEGORY_DELETED
+  BUDGET_UPDATED
+  BUDGET_EXCEEDED
+  LIST_CREATED
+  LIST_UPDATED
+  LIST_DELETED
+}
+
+model User {
+  id            String         @id @default(uuid())
+  name          String
+  email         String         @unique
+  password      String
+  shoppingLists ShoppingList[]
+  notifications Notification[]
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+}
+
+model ShoppingList {
+  id            String         @id @default(uuid())
+  name          String
+  description   String?
+  privacy       ListPrivacy    @default(PRIVATE)
+  ownerId       String
+  owner         User           @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  items         Item[]
+  categories    Category[]
+  budget        Budget?
+  notifications Notification[]
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+
+  @@index([ownerId])
+  @@index([privacy])
+}
+
+model Category {
+  id        String       @id @default(uuid())
+  listId    String
+  list      ShoppingList @relation(fields: [listId], references: [id], onDelete: Cascade)
+  name      String
+  color     String?
+  isDefault Boolean      @default(false)
+  items     Item[]
+  createdAt DateTime     @default(now())
+  updatedAt DateTime     @updatedAt
+
+  @@unique([listId, name])
+  @@index([listId])
+}
+
+model Item {
+  id            String         @id @default(uuid())
+  listId        String
+  list          ShoppingList   @relation(fields: [listId], references: [id], onDelete: Cascade)
+  categoryId    String?
+  category      Category?      @relation(fields: [categoryId], references: [id], onDelete: SetNull)
+  name          String
+  quantity      Decimal        @default(1)
+  price         Decimal        @default(0)
+  note          String?
+  imageUrl      String?
+  purchased     Boolean        @default(false)
+  purchasedAt   DateTime?
+  notifications Notification[]
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+
+  @@index([listId])
+  @@index([categoryId])
+  @@index([purchased])
+}
+
+model Budget {
+  id              String       @id @default(uuid())
+  listId          String       @unique
+  list            ShoppingList @relation(fields: [listId], references: [id], onDelete: Cascade)
+  totalLimit      Decimal?
+  calculatedTotal Decimal      @default(0)
+  currency        String       @default("USD")
+  status          BudgetStatus @default(NO_BUDGET)
+  createdAt       DateTime     @default(now())
+  updatedAt       DateTime     @updatedAt
+
+  @@index([listId])
+}
+
+model Notification {
+  id        String           @id @default(uuid())
+  userId    String
+  user      User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  listId    String?
+  list      ShoppingList?    @relation(fields: [listId], references: [id], onDelete: SetNull)
+  itemId    String?
+  item      Item?            @relation(fields: [itemId], references: [id], onDelete: SetNull)
+  type      NotificationType
+  title     String
+  message   String
+  metadata  Json?
+  isRead    Boolean          @default(false)
+  createdAt DateTime         @default(now())
+  updatedAt DateTime         @updatedAt
+
+  @@index([userId, isRead])
+  @@index([userId, createdAt])
+  @@index([listId])
+  @@index([itemId])
+}
